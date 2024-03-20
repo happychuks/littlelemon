@@ -11,7 +11,14 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 import configparser # This Python module read the database settings from the .cnf file in Django's settings.py file:
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+config2 = configparser.ConfigParser()
+config2.read('dBconfig.cnf')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6b+2w^^#1n-!(2xw^201w-%=^f$7)n6$c(jzbfbm=po1o$41g+'
+SECRET_KEY = "config.get('django', 'SECRET_KEY')"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'restaurant',
+    'rest_framework',
+    'djoser',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -75,17 +85,16 @@ WSGI_APPLICATION = 'littlelemon.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-config = configparser.ConfigParser()
-config.read('dBconfig.cnf')
+
 
 DATABASES = {  
     'default': {  
-        'ENGINE': config.get('database', 'engine'),
-        'NAME': config.get('database', 'name'),
-        'USER': config.get('database', 'user'),
-        'PASSWORD': config.get('database', 'password'),
-        'HOST': config.get('database', 'host'),
-        'PORT': config.getint('database', 'port'),
+        'ENGINE': config2.get('database', 'engine'),
+        'NAME': config2.get('database', 'name'),
+        'USER': config2.get('database', 'user'),
+        'PASSWORD': config2.get('database', 'password'),
+        'HOST': config2.get('database', 'host'),
+        'PORT': config2.getint('database', 'port'),
         'OPTIONS': {  
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
         }  
@@ -137,3 +146,12 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK ={
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+DJOSER = {"USER_ID_FIELD":"username",}
