@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import configparser # This Python module read the database settings from the .cnf file in Django's settings.py file:
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'littlelemon.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': ['restaurant/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,12 +75,23 @@ WSGI_APPLICATION = 'littlelemon.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+config = configparser.ConfigParser()
+config.read('dBconfig.cnf')
+
+DATABASES = {  
+    'default': {  
+        'ENGINE': config.get('database', 'engine'),
+        'NAME': config.get('database', 'name'),
+        'USER': config.get('database', 'user'),
+        'PASSWORD': config.get('database', 'password'),
+        'HOST': config.get('database', 'host'),
+        'PORT': config.getint('database', 'port'),
+        'OPTIONS': {  
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"  
+        }  
+    }  
 }
+
 
 
 # Password validation
@@ -118,6 +130,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    "restaurant/static",
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
