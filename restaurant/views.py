@@ -27,4 +27,4 @@ class BookingViewSet(viewsets.ModelViewSet):
 @api_view()
 @permission_classes([IsAuthenticated]) 
 def msg(request):
-    return Response({'message': 'This page is protected'})
+    return Response({'message': 'This view is protected'})
